@@ -75,7 +75,7 @@ func (ssg *selectSQLGenerator) Generate(b sb.SQLBuilder, clauses exp.SelectClaus
 		case OrderSQLFragment:
 			ssg.OrderSQL(b, clauses.Order())
 		case OrderWithOffsetFetchSQLFragment:
-			ssg.OrderWithOffsetFetchSQL(b, clauses.Order(), clauses.Offset(), clauses.Limit())
+			ssg.OrderWithOffsetFetchSQL(b, clauses.Order(), clauses.Offset(), clauses.Limit(), clauses.IsSubQuery())
 		case LimitSQLFragment:
 			ssg.LimitSQL(b, clauses.Limit())
 		case OffsetSQLFragment:
@@ -135,7 +135,7 @@ func (ssg *selectSQLGenerator) SelectWithLimitSQL(b sb.SQLBuilder, clauses exp.S
 	if dc != nil {
 		b.Write(ssg.dialectOptions.DistinctFragment)
 	}
-	if clauses.Offset() == 0 && clauses.Limit() != nil {
+	if clauses.Offset() == 0 && clauses.Limit() != nil && !clauses.IsSubQuery() {
 		ssg.LimitSQL(b, clauses.Limit())
 		b.WriteRunes(ssg.dialectOptions.SpaceRune)
 	}
